@@ -11,7 +11,7 @@
             <div class="flick-form_grid">
                 <form method="post" action="" name="newletter">
                     <input type="text" class="textbox" placeholder="Votre Login" name="lelogin" required>
-                    <input type="text" class="textbox" placeholder="Mot de passe" name="lepswd" required >
+                    <input type="text" class="textbox" placeholder="Mot de passe" name="lepass" required >
                     <div class="smt">
                         <input type="submit" value="S'identifier">
                     </div>
