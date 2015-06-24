@@ -1,5 +1,11 @@
 @charset "utf-8";
 /* CSS Document */
+
+.clear
+{
+	clear:both;
+}
+
 body
 {
 	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -65,3 +71,45 @@ nav li ul
 {
  position:absolute;
 }
+
+/*--------------*/
+menu
+{
+	text-align:right;
+}
+
+
+.connex ul 
+{
+ margin:0;
+ padding:0;
+ list-style-type:none;
+ text-align:center;
+}
+
+.connex li 
+{
+ float:left;
+ margin:auto;
+ padding:0;
+ list-style-type:none;
+}
+
+.connex li a 
+{
+ display:block;
+ color:#06F;
+ text-decoration:none;
+ padding:5px;
+ font-size:.9em;
+ font-weight:bold;
+}
+
+.connex li a:hover 
+{
+ color:#F00;
+}
+
+
+
+
