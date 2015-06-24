@@ -1,10 +1,8 @@
 <!doctype html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>Telepro-photo</title>
-        <link rel="stylesheet" href="styles.css" type="text/css" />
-    </head>
+    <?php
+      include "includes/head.php";
+    ?>
 
     <body>
        <div class="wrap">
@@ -26,9 +24,9 @@
                        <li><a href="">Divers</a></li>
                    </ul>
                  </li>
-                 <li><a href="">Nous Contacter</a></li>
+                 <li><a href="contact.php">Nous Contacter</a></li>
                  <li><a href="">Espaces Clients</a></li>
-                 <li><a href="">Connexion</a></li>
+                 <li><a href="connexion.php">Connexion</a></li>
               </ul>
           </nav>
         </header>
