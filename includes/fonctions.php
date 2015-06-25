@@ -31,7 +31,7 @@ function upload_originales($fichier,$destination,$ext){
     if($extension_origine==="jpeg"){ $extension_origine = "jpg"; }
     
     // création du nom final  (appel de la fonction chaine_hasard, pour la chaine de caractère aléatoire)
-    $nom_final = chaine_hasard(25);
+    $nom_final = date('YmdHis').chaine_hasard(36);
     
     // on a besoin du nom final dans le tableau $sortie si la fonction réussit
     $sortie['poids'] = filesize($fichier['tmp_name']);
@@ -76,19 +76,6 @@ function traite_chaine($chaine){
     return $sortie;
 }
 
-/*
- * 
- * Fonction qui crée les images en .jpg proportionelles ou coupées avec centrage avec comme paramètres:
- * creation_img("chemin vers l'originales",
- *  "nom complet du fichier originale sans extension",
- *  "extension de l'originale",
- *  "dossier de destination",
- *  "largeur en pixel maximum de l'image",
- *  "hauteur maximale en pixel de l'image",
- *  "Qualitée jpeg de 0 à 100",
- *  "Proportion (true par défaut), garde les proportions, mettre false si on souhaite centrer l'image et la couper");
- * 
- */
 
 function creation_img($chemin_org, $nom,$extension,$destination,$largeur_max,$hauteur_max,$qualite, $proportion = true){
     

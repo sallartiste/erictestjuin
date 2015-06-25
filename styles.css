@@ -13,8 +13,13 @@ body
 
 .wrap
 {
-	width:1000px;
+	width:1010px;
 	margin:0 auto;
+}
+
+.connect
+{
+	text-align:right;
 }
 
 nav
@@ -73,43 +78,12 @@ nav li ul
 }
 
 /*--------------*/
-menu
+.miniatures
 {
-	text-align:right;
+	border:1px solid #CCC;
+	width:155px;
+	display:inline-block;
+	margin-right:10px;
+	margin-top:10px;
+	text-align:center;
 }
-
-
-.connex ul 
-{
- margin:0;
- padding:0;
- list-style-type:none;
- text-align:center;
-}
-
-.connex li 
-{
- float:left;
- margin:auto;
- padding:0;
- list-style-type:none;
-}
-
-.connex li a 
-{
- display:block;
- color:#06F;
- text-decoration:none;
- padding:5px;
- font-size:.9em;
- font-weight:bold;
-}
-
-.connex li a:hover 
-{
- color:#F00;
-}
-
-
-
-

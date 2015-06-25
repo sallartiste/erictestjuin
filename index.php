@@ -40,6 +40,14 @@ if(isset($_POST['lelogin']) && isset($_POST['lepass']))
 		$error_connect = "Mauvais login ou le mot de passe incorrect";
 	}
 }
+$sql = "SELECT p.lenom,p.lextension,p.letitre,p.ladesc, u.lelogin 
+    FROM photo p
+    INNER JOIN utilisateur u ON u.id = p.utilisateur_id
+    ORDER BY p.id DESC; 
+    ";
+$recup_sql = $bdd->prepare($sql) or die (print_r(errorInfo()));	
+$recup_sql->execute();
+
 ?>
 
 <!doctype html>
@@ -51,8 +59,8 @@ if(isset($_POST['lelogin']) && isset($_POST['lepass']))
     <body>
        <div class="wrap">
          <header>
-          <h1>Bienvenue sur Telepro-photo.fr</h1>
-          <div id="connect">
+          
+          <div class="connect">
                     <?php
                     // si on est pas (ou plus) connecté
                     if (!isset($_SESSION['sid']) || $_SESSION['sid'] != session_id()) {
@@ -67,9 +75,10 @@ if(isset($_POST['lelogin']) && isset($_POST['lepass']))
                     }else{
                         
                         // texte d'accueil
-                        echo "<h3>Bonjour ".$_SESSION['lenom'].'</h3>';
-                        echo "<p>Vous êtes connecté en tant que <span>".$_SESSION['nom_perm']."</span></p>";
-                        echo "<h5><a href='deconnect.php'>Déconnexion</a></h5>";
+                        echo "<span>Bonjour ".$_SESSION['lenom']. "| </span>";
+						echo "<span><a href='deconnect.php'>Déconnexion</a></span><br />";
+                        echo "<span>Vous êtes connecté en tant que <span>".$_SESSION['nom_perm']."</span></span><br />";
+                        
                         
                         // liens  suivant la permission utilisateur
                         switch($_SESSION['laperm']){
@@ -86,18 +95,6 @@ if(isset($_POST['lelogin']) && isset($_POST['lepass']))
                                 echo "<a href='membre.php'>Espace membre</a>";
                         }
                     }
-					
-					// récupérations des images dans la table photo
-					$sql = "SELECT p.lenom,p.letitre,p.ladesc, u.lelogin, 
-						GROUP_CONCAT(r.id) AS rubid, 
-						GROUP_CONCAT(r.lintitule SEPARATOR '~~') AS lintitule 
-						FROM photo p
-						INNER JOIN utilisateur u ON u.id = p.utilisateur_id
-						LEFT JOIN photo_has_rubrique h ON h.photo_id = p.id
-						LEFT JOIN rubrique r ON h.rubriques_id = r.id
-						GROUP BY p.id
-						ORDER BY p.id DESC; 
-						";
 					     
                     ?>
                 </div>
@@ -107,15 +104,17 @@ if(isset($_POST['lelogin']) && isset($_POST['lepass']))
                  <li><a href="">Accueil</a></li>
                 <li><a href="">Catégories</a>
                   <ul>
-                       <li><a href="">Animaux</a></li>
-                       <li><a href="">Architectures</a></li>
-                       <li><a href="">Artistiques</a></li>
-                       <li><a href="">Personnes</a></li>
-                       <li><a href="">Paysages</a></li>
-                       <li><a href="">Sports</a></li>
-                       <li><a href="">technologies</a></li>
-                       <li><a href="">Transports</a></li>
-                       <li><a href="">Divers</a></li>
+                    <?php
+					   $req = "SELECT * FROM rubriques ORDER BY id";
+					   $rub_pics =$bdd->prepare($req) or die (print_r(errorInfo()));
+					   $rub_pics->execute();
+					   
+					   while($rubriques = $rub_pics->fetch())
+					   {
+					       $sous_categories = $rubriques['lintitule'];
+						   echo"<li><a href=''>$sous_categories</a></li>";
+					   }
+					?>
                    </ul>
                  </li>
                  <li><a href="contact.php">Nous Contacter</a></li>
@@ -124,7 +123,19 @@ if(isset($_POST['lelogin']) && isset($_POST['lepass']))
               <div class="clear"></div>
           </nav>
         </header>
-        
+        <div class="content">
+            <h1>Bienvenues sur Telepro-photo.fr</h1>
+            <?php
+            while($ligne = $recup_sql->fetch())
+			{
+                 echo "<div class='miniatures'>";
+                 echo "<h4>".$ligne['letitre']."</h4>";
+                 echo "<a href='".CHEMIN_RACINE.$dossier_gd.$ligne['lenom'].".".$ligne['lextension']."' target='_blank'><img src='".CHEMIN_RACINE.$dossier_mini.$ligne['lenom'].".".$ligne['lextension']."' alt='' /></a>";
+                 echo "<p>".$ligne['ladesc']."<br /> by <strong>".$ligne['lelogin']."</strong></p>";
+                 echo "</div>";
+               }                
+               ?> 
+        </div>
        </div>
     </body>
 </html>
