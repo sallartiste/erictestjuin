@@ -31,7 +31,7 @@ function upload_originales($fichier,$destination,$ext){
     if($extension_origine==="jpeg"){ $extension_origine = "jpg"; }
     
     // création du nom final  (appel de la fonction chaine_hasard, pour la chaine de caractère aléatoire)
-    $nom_final = chaine_hasard(25);
+    $nom_final = date('YmdHis').chaine_hasard(36);
     
     // on a besoin du nom final dans le tableau $sortie si la fonction réussit
     $sortie['poids'] = filesize($fichier['tmp_name']);
@@ -76,19 +76,6 @@ function traite_chaine($chaine){
     return $sortie;
 }
 
-/*
- * 
- * Fonction qui crée les images en .jpg proportionelles ou coupées avec centrage avec comme paramètres:
- * creation_img("chemin vers l'originales",
- *  "nom complet du fichier originale sans extension",
- *  "extension de l'originale",
- *  "dossier de destination",
- *  "largeur en pixel maximum de l'image",
- *  "hauteur maximale en pixel de l'image",
- *  "Qualitée jpeg de 0 à 100",
- *  "Proportion (true par défaut), garde les proportions, mettre false si on souhaite centrer l'image et la couper");
- * 
- */
 
 function creation_img($chemin_org, $nom,$extension,$destination,$largeur_max,$hauteur_max,$qualite, $proportion = true){
     
@@ -220,4 +207,39 @@ function creation_img($chemin_org, $nom,$extension,$destination,$largeur_max,$ha
 
     
     return true;
+}
+
+#fonction de pagination
+function pagination($total, $page_actu = 1, $par_pg = 5, $var_get = "pg") {
+    $nombre_pg = ceil($total / $par_pg);
+    if ($nombre_pg > 1) {
+        $sortie = " ";
+        for ($i = 1; $i <= $nombre_pg; $i++) {
+            if ($i == 1) {
+                if ($i == $page_actu) {
+                    $sortie.= "<ul><li><span class='sans'><< </span></li><li><span class='sans'>Prev </span></li>";
+                } else {
+                    #$sortie.= "<li><a href='?$var_get=$i'><span><<</span></a></li><li> <a href='?$var_get=" . ($page_actu - 1) . "'><span>Prev</span> </a></li>";
+					$sortie.= "<li><a href='?$var_get=$i'><span><<</span></a></li><li> <a href='?$var_get=" . ($page_actu - 1) . "'><span><</span></a></li> ";
+                }
+            }
+            if ($i != $page_actu) {
+                $sortie .= "<li><a href='?$var_get=$i'><span>".$i."</span></a></li>";
+            } else {
+                $sortie .= "<li><span class='sans'>".$i."</span></li>";
+            }
+            if ($i != $nombre_pg) {
+                $sortie.= " ";
+            } else {
+                if ($i == $page_actu) {
+                    $sortie.="<li><span class='sans'>Next</span></li><li><span class='sans'> >></span></li>";
+                } else {
+					 $sortie.= "<li> <a href='?$var_get=" . ($page_actu + 1) . "'><span>Next</span></a></li><li> <a href='?$var_get=$nombre_pg'><span>>></span></a></li></ul> ";
+                }
+            }
+        }
+        return $sortie;
+    } else {
+        return "<span class='sans'>Page 1</span>";
+    }
 }
