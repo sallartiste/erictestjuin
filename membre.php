@@ -99,7 +99,7 @@ $sql = "SELECT p.*, GROUP_CONCAT(r.id) AS idrub, GROUP_CONCAT(r.lintitule SEPARA
     LEFT JOIN rubriques r ON h.rubriques_id = r.id
         WHERE p.utilisateur_id = ".$_SESSION['id']."
         GROUP BY p.id
-        ORDER BY p.id DESC;
+        ORDER BY p.id DESC LIMIT 0,5;
     ";
 $recup_sql = $bdd->query($sql) or die (print_r($bdd->erroInfo()));
 

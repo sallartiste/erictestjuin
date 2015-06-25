@@ -5,6 +5,30 @@ require_once 'includes/config.php';
 require_once 'includes/connect.php';
 require_once 'includes/fonctions.php';
 
+ #preparation de la pagination
+   $recup_nb_photo = "SELECT COUNT(*) nb FROM photo";
+   $tot = $bdd->query($recup_nb_photo);
+   $maligne = $tot->fetch();
+	
+   $nb_total = $maligne['nb'];
+	
+   //verification de la pagination
+	
+   if(isset($_GET[$get_pagination]) && ctype_digit($_GET[$get_pagination]))
+    {
+	$page_actu = $_GET[$get_pagination];
+	}
+	else
+	{
+	$page_actu = 1;
+	}
+   //creation de la variable de debut a mettre dans la limite
+  $debut = ($page_actu-1)*$elements_par_page;
+  
+  #Initialisation de la pagination
+  $get_pagination = "pg"; 
+  $pagin = pagination($nb_total, $page_actu, $elements_par_page, $get_pagination);
+  
 
 if(isset($_POST['lelogin']) && isset($_POST['lepass']))
 {
@@ -43,7 +67,7 @@ if(isset($_POST['lelogin']) && isset($_POST['lepass']))
 $sql = "SELECT p.lenom,p.lextension,p.letitre,p.ladesc, u.lelogin 
     FROM photo p
     INNER JOIN utilisateur u ON u.id = p.utilisateur_id
-    ORDER BY p.id DESC; 
+    ORDER BY p.id DESC LIMIT $debut,$elements_par_page; 
     ";
 $recup_sql = $bdd->prepare($sql) or die (print_r(errorInfo()));	
 $recup_sql->execute();
@@ -125,6 +149,7 @@ $recup_sql->execute();
         </header>
         <div class="content">
             <h1>Bienvenues sur Telepro-photo.fr</h1>
+         
             <?php
             while($ligne = $recup_sql->fetch())
 			{
@@ -137,5 +162,6 @@ $recup_sql->execute();
                ?> 
         </div>
        </div>
+       
     </body>
 </html>

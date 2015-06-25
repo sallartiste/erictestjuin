@@ -87,3 +87,18 @@ nav li ul
 	margin-top:10px;
 	text-align:center;
 }
+
+
+/*-----pagination-----*/
+.paging
+{
+	border:1px solid gray;
+}
+
+.paging ul
+{
+	 margin: 0; 
+	 padding:0; 
+	 list-style: none; 
+	 text-align: center;
+}

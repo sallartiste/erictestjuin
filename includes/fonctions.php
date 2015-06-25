@@ -208,3 +208,38 @@ function creation_img($chemin_org, $nom,$extension,$destination,$largeur_max,$ha
     
     return true;
 }
+
+#fonction de pagination
+function pagination($total, $page_actu = 1, $par_pg = 5, $var_get = "pg") {
+    $nombre_pg = ceil($total / $par_pg);
+    if ($nombre_pg > 1) {
+        $sortie = " ";
+        for ($i = 1; $i <= $nombre_pg; $i++) {
+            if ($i == 1) {
+                if ($i == $page_actu) {
+                    $sortie.= "<ul><li><span class='sans'><< </span></li><li><span class='sans'>Prev </span></li>";
+                } else {
+                    #$sortie.= "<li><a href='?$var_get=$i'><span><<</span></a></li><li> <a href='?$var_get=" . ($page_actu - 1) . "'><span>Prev</span> </a></li>";
+					$sortie.= "<li><a href='?$var_get=$i'><span><<</span></a></li><li> <a href='?$var_get=" . ($page_actu - 1) . "'><span><</span></a></li> ";
+                }
+            }
+            if ($i != $page_actu) {
+                $sortie .= "<li><a href='?$var_get=$i'><span>".$i."</span></a></li>";
+            } else {
+                $sortie .= "<li><span class='sans'>".$i."</span></li>";
+            }
+            if ($i != $nombre_pg) {
+                $sortie.= " ";
+            } else {
+                if ($i == $page_actu) {
+                    $sortie.="<li><span class='sans'>Next</span></li><li><span class='sans'> >></span></li>";
+                } else {
+					 $sortie.= "<li> <a href='?$var_get=" . ($page_actu + 1) . "'><span>Next</span></a></li><li> <a href='?$var_get=$nombre_pg'><span>>></span></a></li></ul> ";
+                }
+            }
+        }
+        return $sortie;
+    } else {
+        return "<span class='sans'>Page 1</span>";
+    }
+}
