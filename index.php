@@ -51,7 +51,7 @@ if(isset($_POST['lelogin']) && isset($_POST['lepass']))
     <body>
        <div class="wrap">
          <header>
-          <h1>Bienvenu sur Telepro-photo.fr</h1>
+          <h1>Bienvenue sur Telepro-photo.fr</h1>
           <div id="connect">
                     <?php
                     // si on est pas (ou plus) connecté
