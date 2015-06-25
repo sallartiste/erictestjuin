@@ -97,7 +97,6 @@ $sql = "SELECT p.*, GROUP_CONCAT(r.id) AS idrub, GROUP_CONCAT(r.lintitule SEPARA
     FROM photo p
 	LEFT JOIN photo_has_rubriques h ON h.photo_id = p.id
     LEFT JOIN rubriques r ON h.rubriques_id = r.id
-        WHERE p.utilisateur_id = ".$_SESSION['id']."
         GROUP BY p.id
         ORDER BY p.id DESC;
     ";
@@ -122,7 +121,7 @@ $recup_section->execute();
 				<?php // texte d'accueil
                         echo "<span>Bonjour ".$_SESSION['lenom']. "| </span>";
 						echo "<span><a href='deconnect.php'>Déconnexion</a></span><br />";
-                        
+                        echo "<span>Vous êtes connecté en tant que <span>".$_SESSION['nom_perm']."</span></span><br />";
                        
                         // liens  suivant la permission utilisateur
                         switch($_SESSION['laperm']){
@@ -166,26 +165,8 @@ $recup_section->execute();
              </header>
           
              <div class="content">
-                 Vous êtes connecté en tant que <span><?php echo $_SESSION['nom_perm']?></span>
-                 <h2>Vous dans l'espace membre</h3>
+                 <h3>Bonjour Super Administrator</h3> 
                  
-                 <div id="formulaire">
-                <form action="" enctype="multipart/form-data" method="POST" name="onposte">
-                    <input type="text" name="letitre" required /><br/>
-                   <!-- <input type="hidden" name="MAX_FILE_SIZE" value="50000000" /> -->
-                    <input type="file" name="lefichier" required /><br/>
-                  
-                    <textarea name="ladesc"></textarea><br/>
-                    <input type="submit" value="Envoyer le fichier" /><br/>
-                     Sections : <?php
-                    // affichage des sections
-                    while($ligne = $recup_section->fetch())
-					{
-                        echo $ligne['lintitule']." : <input type='checkbox' name='section[]' value='".$ligne['id']."' > - ";
-                    }
-                    ?>
-                </form>
-            </div>
                  <div id="lesphotos">
                      <?php
                      while($ligne = $recup_sql->fetch()){
@@ -201,7 +182,6 @@ $recup_section->execute();
                  foreach($sections AS $key => $valeur){
                      echo " $valeur<br/>";
                  }
-			     echo"By ".$_SESSION['lenom'];
                  echo "</div>";
                }
                ?>
