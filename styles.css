@@ -1,6 +1,11 @@
 @charset "utf-8";
 /* CSS Document */
 
+h4, h5, h6,
+h1, h2, h3 {margin-top: 0;}
+ul, ol {margin: 0;}
+p {margin: 0;}
+
 .clear
 {
 	clear:both;
@@ -8,13 +13,20 @@
 
 body
 {
-	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
+	background:#EBEBEB;
+	font-size:0.9em;
 }
 
 .wrap
 {
 	width:1010px;
 	margin:0 auto;
+}
+
+.content
+{
+	min-height:700px;
 }
 
 .connect
@@ -86,19 +98,75 @@ nav li ul
 	margin-right:10px;
 	margin-top:10px;
 	text-align:center;
+	background:#fff;
+}
+
+.miniatures h4
+{
+	margin:5px 0 10px 0;;
+	color:#333;
 }
 
 
 /*-----pagination-----*/
-.paging
+
+.pagina
 {
-	border:1px solid gray;
+	/*border:1px solid #FC3;*/
+	text-align:center;
 }
 
-.paging ul
+.pagina ul
 {
-	 margin: 0; 
-	 padding:0; 
-	 list-style: none; 
-	 text-align: center;
+	list-style:none;
 }
+
+.pagina li
+{
+	display:inline-block;
+}
+
+.pagina li a
+{ 
+   text-decoration: none; 
+   display: inline-block;  
+   padding: 2px 8px; 
+   margin: 1px;
+   color:#F90;
+   border: 1px solid #8C8C8C;
+   -webkit-border-radius: 3px; 
+   -moz-border-radius: 3px; 
+   border-radius: 3px; 
+  
+}
+
+.sans
+{ 
+   display: inline-block;  
+   padding: 2px 8px; 
+   margin: 1px;
+   color: #F5F5F5;
+   border: 1px solid #8C8C8C;
+   -webkit-border-radius: 3px; 
+   -moz-border-radius: 3px; 
+   border-radius: 3px; 
+   background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #8C8C8C), color-stop(1, #7D7D7D) );
+   background:-moz-linear-gradient( center top, #8C8C8C 5%, #7D7D7D 100% );
+   filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#8C8C8C', endColorstr='#7D7D7D');
+   background-color:#8C8C8C;
+}
+
+/***-----fooooter-----*/
+footer
+{
+	margin:10px 0 30px 0;
+	background:#484848;
+	padding:5px 0 30px 10px;
+	color:#CCC;
+}
+
+footer span
+{
+	font-size:.7em;
+}
+

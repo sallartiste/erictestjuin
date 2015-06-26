@@ -26,5 +26,7 @@ $mini_qualite = 70;
 $formats_acceptes = array('jpg','jpeg','png');
 
 $get_pagination = "pg";
+$get_pagination_membre = "pag";
 
 $elements_par_page = 20;
+$elements_par_page_membre = 20;

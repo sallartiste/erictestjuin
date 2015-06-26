@@ -40,26 +40,29 @@ if(isset($_POST['lelogin']) && isset($_POST['lepass']))
 	}
 }
 
-//verifier si le formulaire à bien été envoyé
-if(isset($_POST['nom']) && isset($_POST['titre']) && isset($_POST['sujet']) && isset($_POST['couriel']) && isset($_POST['letexte']))
+if(isset($_GET['idrubriques']) && ctype_digit($_GET['idrubriques']))
 {
-	$nom = strip_tags(trim($_POST['nom']));
-	$titre = strip_tags(trim($_POST['titre']));
-	$subject = strip_tags(trim($_POST['sujet']));
-	$couriel = strip_tags(trim($_POST['couriel']));
-	$message = strip_tags(trim($_POST['letexte']));
-	
-	//si tout va bien, on envoie le mail
-	
-	 $to      = 'sallartistee@yahoo.fr';
-     $headers = 'From: '. $couriel. "\r\n" .
-     'Reply-To: ' .$couriel. "\r\n" .
-     'X-Mailer: PHP/' . phpversion();
 
-     mail($to, $subject, $titre. $nom ." : ". $message, $headers);
-    
-    $affiche = "Cool, Votre message a bien été envoyé, nous vous contacterons soon!!!";
+   #on choisi une rubrique
+	$tech_pitz = "INNER JOIN photo_has_rubriques h ON p.id = h.photo_id
+				  INNER JOIN rubriques r ON r.id = h.rubriques_id 
+				  WHERE r.id = ".$_GET['idrubriques'];
 }
+else
+{
+	$tech_pitz = "";
+}
+
+	
+	$sql = "SELECT p.lenom,p.lextension,p.letitre,p.ladesc, u.lelogin
+			FROM photo p
+			INNER JOIN utilisateur u ON u.id = p.utilisateur_id
+			$tech_pitz
+			ORDER BY p.id DESC LIMIT 0,24; 
+			";
+			
+	$recup_sql = $bdd->prepare($sql) or die (print_r(errorInfo()));	
+	$recup_sql->execute();
 
 ?>
 
@@ -120,37 +123,18 @@ if(isset($_POST['nom']) && isset($_POST['titre']) && isset($_POST['sujet']) && i
           </nav>
         </header>
         <div class="content">
-            <h2>Contactez-nous</h2>
-               
-               <div id="formulaire">
-            <h5>UN PETIT MOT ?</h5>
-            <p>
-                Vous pouvez utiliser le formulaire de contact ci-dessous pour toute demande. 
-            </p><br />
+            <h2>Vous êtes dans la section :</h2>
+           
             <?php
-                if(isset($affiche))
-                {
-                   echo $affiche;
-                }else{
-			?> 
-            
-            <form action="" method="post">
-                <input type="text" name="nom" placeholder="Votre Nom" required />
-                <input type="text" name="prenom" placeholder="Votre Prénom" />
-                <input type="radio" name="titre" value="Mme" id="mme" required /><label for="mme">Mme</label>
-                <input type="radio" name="titre" value="Mme" id="mme" /><label for="mme">Mme</label>
-                <input type="radio" name="titre" value="M" id="mon" /><label for="mon">M</label>
-                <input type="email" name="couriel" placeholder="Entrez votre e-mail" required /><br/><br />
-                <input type="text" name="sujet" placeholder="Sujet de votre mail" required /><br/><br />
-                <textarea maxlength="500" placeholder="Entrez votre message" name="letexte" required rows="6" cols="90" ></textarea><br>
-                <input type="submit" value="ENVOYEZ" >
-            </form>
-            <?php
-            }
-			?>
-
-        </div><!--fin #formulaire-->
-              
+            while($ligne = $recup_sql->fetch())
+			{
+                 echo "<div class='miniatures'>";
+                 echo "<h4>".$ligne['letitre']."</h4>";
+                 echo "<a href='".CHEMIN_RACINE.$dossier_gd.$ligne['lenom'].".".$ligne['lextension']."' target='_blank'><img src='".CHEMIN_RACINE.$dossier_mini.$ligne['lenom'].".".$ligne['lextension']."' alt='' /></a>";
+                 echo "<p>".$ligne['ladesc']."<br /> by <strong>".$ligne['lelogin']."</strong></p>";
+                 echo "</div>";
+               }                
+               ?> 
         </div>
        
         <?php

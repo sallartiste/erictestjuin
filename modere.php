@@ -5,8 +5,34 @@ require_once 'includes/config.php';
 require_once 'includes/connect.php';
 require_once 'includes/fonctions.php';
 
+#preparation de la pagination
+   $recup_nb_photo = "SELECT COUNT(*) nb FROM photo";
+   $tot = $bdd->query($recup_nb_photo);
+   $maligne = $tot->fetch();
+	
+   $nb_total = $maligne['nb'];
+	
+   //verification de la pagination
+	
+   if(isset($_GET[$get_pagination]) && ctype_digit($_GET[$get_pagination]))
+    {
+	$page_actu = $_GET[$get_pagination];
+	}
+	else
+	{
+	$page_actu = 1;
+	}
+   //creation de la variable de debut a mettre dans la limite
+  $debut = ($page_actu-1)*$elements_par_page;
+  
+  #Initialisation de la pagination
+  $get_pagination = "pg"; 
+  $pagina = pagination($nb_total, $page_actu, $elements_par_page, $get_pagination);
+  
+//*******fin pagination*********//
+
 # si on est pas (ou plus) connecté
-if (!isset($_SESSION['sid']) || $_SESSION['sid'] != session_id()) 
+if(!isset($_SESSION['sid']) || $_SESSION['sid'] != session_id()) 
 {
     header("location: deconnect.php");
 }
@@ -48,7 +74,7 @@ $sql = "SELECT p.*, GROUP_CONCAT(r.id) AS idrub, GROUP_CONCAT(r.lintitule SEPARA
 	LEFT JOIN photo_has_rubriques h ON h.photo_id = p.id
     LEFT JOIN rubriques r ON h.rubriques_id = r.id 
 	GROUP BY p.id
-	ORDER BY p.id DESC;
+	ORDER BY p.id DESC LIMIT $debut,$elements_par_page;
     ";
 $recup_sql = $bdd->query($sql) or die (print_r($bdd->erroInfo()));
 
@@ -85,33 +111,18 @@ $recup_sql = $bdd->query($sql) or die (print_r($bdd->erroInfo()));
                 </div>
                  <br /><br />
           <nav>
-              <ul>
-                 <li><a href="index.php">Accueil</a></li>
-                <li><a href="">Catégories</a>
-                  <ul>
-                    <?php
-					   $req = "SELECT * FROM rubriques ORDER BY id";
-					   $rub_pics =$bdd->prepare($req) or die (print_r(errorInfo()));
-					   $rub_pics->execute();
-					   
-					   while($rubriques = $rub_pics->fetch())
-					   {
-					       $sous_categories = $rubriques['lintitule'];
-						   echo"<li><a href=''>$sous_categories</a></li>";
-					   }
-					?>
-                   </ul>
-                 </li>
-                 <li><a href="contact.php">Nous Contacter</a></li>
-                 <li><a href="">Espaces Clients</a></li>
-              </ul>
+               <?php
+			       include "includes/menu.php";
+			  ?>
               <div class="clear"></div>
           </nav>
              </header>
           
              <div class="content">
-                 Vous êtes connecté en tant que <span><?php echo $_SESSION['nom_perm']?></span>
-                 <h2>Bienvenu cher Modérateur</h2> 
+                 Vous êtes connecté en tant que <span><?php echo $_SESSION['nom_perm']?></span><br /><br />
+                 <h2>Bienvenue cher Modérateur</h2> 
+                 
+                 <div class="pagina"><?= $pagina ?></div><!--Affichage de Pagination-->
                  
                  <div id="lesphotos">
                      <?php
@@ -122,7 +133,7 @@ $recup_sql = $bdd->query($sql) or die (print_r($bdd->erroInfo()));
 				 <img src='".   CHEMIN_RACINE.$dossier_mini.$ligne['lenom'].".jpg' alt='' /></a>";
                  echo "<p>".$ligne['ladesc']."<br /><br />
 				 
-                 <a href=''><img src='img/modifier.png' alt='modifier' /></a> 
+                 <a href='modif.php?id=".$ligne['id']."'><img src='img/modifier.png' alt='modifier' /></a> 
                      </p>";
 					 $sections = explode('|||',$ligne['lintitule']);
                  //$idsections = explode(',',$ligne['idrub']);
@@ -136,6 +147,10 @@ $recup_sql = $bdd->query($sql) or die (print_r($bdd->erroInfo()));
                  </div>
              </div>
             <div id="bas"></div>
+         
+          <?php
+			include 'includes/footer.php';
+		 ?>
          </div>
 
     </body>
