@@ -6,7 +6,7 @@ require_once 'includes/connect.php';
 require_once 'includes/fonctions.php';
 
 #preparation de la pagination
-   $recup_nb_photo = "SELECT COUNT(*) nb FROM photo";
+   $recup_nb_photo = "SELECT COUNT(*) nb FROM photo WHERE utilisateur_id =". $_SESSION['id'];
    $tot = $bdd->query($recup_nb_photo);
    $maligne = $tot->fetch();
 	
@@ -143,36 +143,7 @@ $recup_section->execute();
     ?>
     <body>
          <div class="wrap">
-             <header>
-                <div class="connect">
-				<?php // texte d'accueil
-                        echo "<span>Bonjour ".$_SESSION['lenom']. "| </span>";
-						echo "<span><a href='deconnect.php'>Déconnexion</a></span><br />";
-                        
-                       
-                        // liens  suivant la permission utilisateur
-                        switch($_SESSION['laperm']){
-                            // si on est l'admin
-                            case 0 :
-                               echo "<a href='admin.php'>Administrer le site</a> - <a href='membre.php'>Espace membre</a>";
-                                break;
-                            // si on est modérateur
-                            case 1:
-                                echo "<a href='modere.php'>Modérer le site</a> - <a href='membre.php'>Espace membre</a>";
-                                break;
-                            // si autre droit (ici simple utilisateur)
-                            default :
-                                echo "<a href='membre.php'>Espace membre</a>";
-                        }?>
-                </div>
-                 <br /><br />
-          <nav>
-               <?php
-			       include "includes/menu.php";
-			  ?>
-              <div class="clear"></div>
-          </nav>
-             </header>
+             <?php include 'includes/header.php'; ?>
           
              <div class="content">
                  Vous êtes connecté en tant que <span><?php echo $_SESSION['nom_perm']?></span><br /><br />
@@ -205,7 +176,7 @@ $recup_section->execute();
                  echo "<div class='miniatures'>";
                  echo "<h4>".$ligne['letitre']."</h4>";
                  echo "<a href='".CHEMIN_RACINE.$dossier_gd.$ligne['lenom'].".".$ligne['lextension']."' target='_blank'><img src='".CHEMIN_RACINE.$dossier_mini.$ligne['lenom'].".jpg' alt='' /></a>";
-                 echo "<p>".$ligne['ladesc']."<br /><br />
+                 echo "<p><span>".$ligne['ladesc']."</span><br /><br />
 				 
                  <a href='modif.php?id=".$ligne['id']."'><img src='img/modifier.png' alt='modifier' /></a> <img onclick='supprime(".$ligne['id'].");' src='img/supprimer.png' alt='supprimer' />
                      </p>";
@@ -214,7 +185,7 @@ $recup_section->execute();
                  foreach($sections AS $key => $valeur){
                      echo " $valeur<br/>";
                  }
-			     echo"By ".$_SESSION['lenom'];
+			     echo"<span class='name'>By ".$_SESSION['lenom']."</span>";
                  echo "</div>";
                }
                ?>

@@ -71,54 +71,7 @@ if(isset($_POST['nom']) && isset($_POST['titre']) && isset($_POST['sujet']) && i
 
     <body>
        <div class="wrap">
-         <header>
-          
-          <div class="connect">
-                    <?php
-                    // si on est pas (ou plus) connecté
-                    if (!isset($_SESSION['sid']) || $_SESSION['sid'] != session_id()) {
-                        ?>
-                        <form action="" name="connection" method="POST">
-                            <input type="text" name="lelogin" required />
-                            <input type="password" name="lepass" required />
-                            <input type="submit" value="Connexion" />
-                        </form>
-                        <?php
-                        // sinon on est connecté
-                    }else{
-                        
-                        // texte d'accueil
-                        echo "<span>Bonjour ".$_SESSION['lenom']. "| </span>";
-						echo "<span><a href='deconnect.php'>Déconnexion</a></span><br />";
-                        echo "<span>Vous êtes connecté en tant que <span>".$_SESSION['nom_perm']."</span></span><br />";
-                        
-                        
-                        // liens  suivant la permission utilisateur
-                        switch($_SESSION['laperm']){
-                            // si on est l'admin
-                            case 0 :
-                               echo "<a href='admin.php'>Administrer le site</a> - <a href='membre.php'>Espace membre</a>";
-                                break;
-                            // si on est modérateur
-                            case 1:
-                                echo "<a href='modere.php'>Modérer le site</a> - <a href='membre.php'>Espace membre</a>";
-                                break;
-                            // si autre droit (ici simple utilisateur)
-                            default :
-                                echo "<a href='membre.php'>Espace membre</a>";
-                        }
-                    }
-					     
-                    ?>
-                </div>
-          <br /><br />
-          <nav>
-              <?php
-			       include "includes/menu.php";
-			  ?>
-              <div class="clear"></div>
-          </nav>
-        </header>
+         <?php include 'includes/header.php'; ?>
         <div class="content">
             <h2>Contactez-nous</h2>
                

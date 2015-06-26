@@ -87,36 +87,7 @@ $recup_sql = $bdd->query($sql) or die (print_r($bdd->erroInfo()));
     ?>
     <body>
          <div class="wrap">
-             <header>
-                <div class="connect">
-				<?php // texte d'accueil
-                        echo "<span>Bonjour ".$_SESSION['lenom']. "| </span>";
-						echo "<span><a href='deconnect.php'>Déconnexion</a></span><br />";
-                        echo "<span>Vous êtes connecté en tant que <span>".$_SESSION['nom_perm']."</span></span><br />";
-                       
-                        // liens  suivant la permission utilisateur
-                        switch($_SESSION['laperm']){
-                            // si on est l'admin
-                            case 0 :
-                               echo "<a href='admin.php'>Administrer le site</a> - <a href='membre.php'>Espace membre</a>";
-                                break;
-                            // si on est modérateur
-                            case 1:
-                                echo "<a href='modere.php'>Modérer le site</a> - <a href='membre.php'>Espace membre</a>";
-                                break;
-                            // si autre droit (ici simple utilisateur)
-                            default :
-                                echo "<a href='membre.php'>Espace membre</a>";
-                        }?>
-                </div>
-                 <br /><br />
-          <nav>
-               <?php
-			       include "includes/menu.php";
-			  ?>
-              <div class="clear"></div>
-          </nav>
-             </header>
+             <?php include 'includes/header.php'; ?>
           
              <div class="content">
                  Vous êtes connecté en tant que <span><?php echo $_SESSION['nom_perm']?></span><br /><br />

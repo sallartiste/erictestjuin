@@ -58,11 +58,17 @@ else
 			FROM photo p
 			INNER JOIN utilisateur u ON u.id = p.utilisateur_id
 			$tech_pitz
-			ORDER BY p.id DESC LIMIT 0,24; 
+			ORDER BY p.id DESC LIMIT 0,20; 
 			";
 			
 	$recup_sql = $bdd->prepare($sql) or die (print_r(errorInfo()));	
 	$recup_sql->execute();
+	
+	$sql="SELECT * FROM rubriques ORDER BY lintitule ASC;";
+$recup_section = $bdd->prepare($sql) or die (print_r(errorInfo()));
+$recup_section->execute();
+
+
 
 ?>
 
@@ -74,56 +80,24 @@ else
 
     <body>
        <div class="wrap">
-         <header>
-          
-          <div class="connect">
-                    <?php
-                    // si on est pas (ou plus) connecté
-                    if (!isset($_SESSION['sid']) || $_SESSION['sid'] != session_id()) {
-                        ?>
-                        <form action="" name="connection" method="POST">
-                            <input type="text" name="lelogin" required />
-                            <input type="password" name="lepass" required />
-                            <input type="submit" value="Connexion" />
-                        </form>
-                        <?php
-                        // sinon on est connecté
-                    }else{
-                        
-                        // texte d'accueil
-                        echo "<span>Bonjour ".$_SESSION['lenom']. "| </span>";
-						echo "<span><a href='deconnect.php'>Déconnexion</a></span><br />";
-                        echo "<span>Vous êtes connecté en tant que <span>".$_SESSION['nom_perm']."</span></span><br />";
-                        
-                        
-                        // liens  suivant la permission utilisateur
-                        switch($_SESSION['laperm']){
-                            // si on est l'admin
-                            case 0 :
-                               echo "<a href='admin.php'>Administrer le site</a> - <a href='membre.php'>Espace membre</a>";
-                                break;
-                            // si on est modérateur
-                            case 1:
-                                echo "<a href='modere.php'>Modérer le site</a> - <a href='membre.php'>Espace membre</a>";
-                                break;
-                            // si autre droit (ici simple utilisateur)
-                            default :
-                                echo "<a href='membre.php'>Espace membre</a>";
-                        }
-                    }
-					     
-                    ?>
-                </div>
-          <br /><br />
-          <nav>
-              <?php
-			       include "includes/menu.php";
-			  ?>
-              <div class="clear"></div>
-          </nav>
-        </header>
+         <?php include 'includes/header.php'; ?>
         <div class="content">
-            <h2>Vous êtes dans la section :</h2>
+        <?php
+           foreach($categories as $key => $value)
+		   {
+				
+				if (isset($_GET['idrubriques']) && $_GET['idrubriques'] == $key)
+				{	
+					//echo"<li class='active'>$value</li>";
+					echo " <h3 class='cat'>Vous êtes dans la section :<span> $value</span></h3>";
+				}
+				else
+				{
+					 //header('location: ?');
+				}	
+			}
+          ?>
+          
            
             <?php
             while($ligne = $recup_sql->fetch())
@@ -131,7 +105,9 @@ else
                  echo "<div class='miniatures'>";
                  echo "<h4>".$ligne['letitre']."</h4>";
                  echo "<a href='".CHEMIN_RACINE.$dossier_gd.$ligne['lenom'].".".$ligne['lextension']."' target='_blank'><img src='".CHEMIN_RACINE.$dossier_mini.$ligne['lenom'].".".$ligne['lextension']."' alt='' /></a>";
-                 echo "<p>".$ligne['ladesc']."<br /> by <strong>".$ligne['lelogin']."</strong></p>";
+                 echo "<p>".$ligne['ladesc']."<br /> <span class='name'>by ".$ligne['lelogin']."</span></p>";
+				
+				  
                  echo "</div>";
                }                
                ?> 

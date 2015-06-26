@@ -30,3 +30,14 @@ $get_pagination_membre = "pag";
 
 $elements_par_page = 20;
 $elements_par_page_membre = 20;
+
+$categories = array(1=>"Animaux",
+					 2=>"Architectures",
+					 3=>"Artistiques",
+					 4=>"Personnes",
+					 5=>"Paysages",
+					 6=>"Sports",
+					 7=>"Technologies",
+					 8=>"Transports",
+					 9=>"Divers");
+ 
