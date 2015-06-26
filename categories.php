@@ -5,6 +5,8 @@ require_once 'includes/config.php';
 require_once 'includes/connect.php';
 require_once 'includes/fonctions.php';
 
+
+
 if(isset($_POST['lelogin']) && isset($_POST['lepass']))
 {
 	//définition des variables local
@@ -82,6 +84,10 @@ $recup_section->execute();
        <div class="wrap">
          <?php include 'includes/header.php'; ?>
         <div class="content">
+        <?php echo "<span>Bonjour ";
+			echo isset($_SESSION['lenom'])?$_SESSION['lenom']:" Visiteurs !";
+			echo" </span>"
+		?>
         <?php
            foreach($categories as $key => $value)
 		   {
@@ -93,12 +99,12 @@ $recup_section->execute();
 				}
 				else
 				{
-					 //header('location: ?');
+					 //header('location: . CHEMIN_RACINE');
 				}	
 			}
           ?>
           
-           
+           <br />
             <?php
             while($ligne = $recup_sql->fetch())
 			{

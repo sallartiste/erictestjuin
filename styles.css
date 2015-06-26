@@ -221,3 +221,13 @@ footer span
 	display:block;
 }
 
+.cat
+{
+	margin-top:10px;
+}
+
+.cat>span
+{
+	color:#F90;
+}
+
