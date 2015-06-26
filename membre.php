@@ -5,8 +5,34 @@ require_once 'includes/config.php';
 require_once 'includes/connect.php';
 require_once 'includes/fonctions.php';
 
+#preparation de la pagination
+   $recup_nb_photo = "SELECT COUNT(*) nb FROM photo WHERE utilisateur_id =". $_SESSION['id'];
+   $tot = $bdd->query($recup_nb_photo);
+   $maligne = $tot->fetch();
+	
+   $nb_total = $maligne['nb'];
+	
+   //verification de la pagination
+	
+   if(isset($_GET[$get_pagination_membre]) && ctype_digit($_GET[$get_pagination_membre]))
+    {
+	$page_actu = $_GET[$get_pagination_membre];
+	}
+	else
+	{
+	$page_actu = 1;
+	}
+   //creation de la variable de debut a mettre dans la limite
+  $debut = ($page_actu-1)*$elements_par_page_membre;
+  
+  #Initialisation de la pagination
+  $$get_pagination_membre = "pag"; 
+  $pagina = pagination($nb_total, $page_actu, $elements_par_page_membre, $get_pagination_membre);
+  
+//*******fin pagination*********//
+
 # si on est pas (ou plus) connecté
-if (!isset($_SESSION['sid']) || $_SESSION['sid'] != session_id()) {
+if(!isset($_SESSION['sid']) || $_SESSION['sid'] != session_id()) {
     header("location: deconnect.php");
 }
 
@@ -99,7 +125,7 @@ $sql = "SELECT p.*, GROUP_CONCAT(r.id) AS idrub, GROUP_CONCAT(r.lintitule SEPARA
     LEFT JOIN rubriques r ON h.rubriques_id = r.id
         WHERE p.utilisateur_id = ".$_SESSION['id']."
         GROUP BY p.id
-        ORDER BY p.id DESC LIMIT 0,5;
+        ORDER BY p.id DESC LIMIT $debut,$elements_par_page_membre;
     ";
 $recup_sql = $bdd->query($sql) or die (print_r($bdd->erroInfo()));
 
@@ -117,56 +143,10 @@ $recup_section->execute();
     ?>
     <body>
          <div class="wrap">
-             <header>
-                <div class="connect">
-				<?php // texte d'accueil
-                        echo "<span>Bonjour ".$_SESSION['lenom']. "| </span>";
-						echo "<span><a href='deconnect.php'>Déconnexion</a></span><br />";
-                        
-                       
-                        // liens  suivant la permission utilisateur
-                        switch($_SESSION['laperm']){
-                            // si on est l'admin
-                            case 0 :
-                               echo "<a href='admin.php'>Administrer le site</a> - <a href='membre.php'>Espace membre</a>";
-                                break;
-                            // si on est modérateur
-                            case 1:
-                                echo "<a href='modere.php'>Modérer le site</a> - <a href='membre.php'>Espace membre</a>";
-                                break;
-                            // si autre droit (ici simple utilisateur)
-                            default :
-                                echo "<a href='membre.php'>Espace membre</a>";
-                        }?>
-                </div>
-                 <br /><br />
-          <nav>
-              <ul>
-                 <li><a href="index.php">Accueil</a></li>
-                <li><a href="">Catégories</a>
-                  <ul>
-                    <?php
-					   $req = "SELECT * FROM rubriques ORDER BY id";
-					   $rub_pics =$bdd->prepare($req) or die (print_r(errorInfo()));
-					   $rub_pics->execute();
-					   
-					   while($rubriques = $rub_pics->fetch())
-					   {
-					       $sous_categories = $rubriques['lintitule'];
-						   echo"<li><a href=''>$sous_categories</a></li>";
-					   }
-					?>
-                   </ul>
-                 </li>
-                 <li><a href="contact.php">Nous Contacter</a></li>
-                 <li><a href="">Espaces Clients</a></li>
-              </ul>
-              <div class="clear"></div>
-          </nav>
-             </header>
+             <?php include 'includes/header.php'; ?>
           
              <div class="content">
-                 Vous êtes connecté en tant que <span><?php echo $_SESSION['nom_perm']?></span>
+                 Vous êtes connecté en tant que <span><?php echo $_SESSION['nom_perm']?></span><br /><br />
                  <h2>Vous dans l'espace membre</h3>
                  
                  <div id="formulaire">
@@ -176,38 +156,46 @@ $recup_section->execute();
                     <input type="file" name="lefichier" required /><br/>
                   
                     <textarea name="ladesc"></textarea><br/>
-                    <input type="submit" value="Envoyer le fichier" /><br/>
-                     Sections : <?php
+                    
+                     <?php
                     // affichage des sections
                     while($ligne = $recup_section->fetch())
 					{
                         echo $ligne['lintitule']." : <input type='checkbox' name='section[]' value='".$ligne['id']."' > - ";
                     }
-                    ?>
+                    ?><br/>
+                    <input type="submit" value="Envoyer le fichier" />
                 </form>
             </div>
+                 
+                 <div class="pagina"><?= $pagina ?></div><!--Affichage de Pagination-->
+                 
                  <div id="lesphotos">
                      <?php
                      while($ligne = $recup_sql->fetch()){
                  echo "<div class='miniatures'>";
                  echo "<h4>".$ligne['letitre']."</h4>";
                  echo "<a href='".CHEMIN_RACINE.$dossier_gd.$ligne['lenom'].".".$ligne['lextension']."' target='_blank'><img src='".CHEMIN_RACINE.$dossier_mini.$ligne['lenom'].".jpg' alt='' /></a>";
-                 echo "<p>".$ligne['ladesc']."<br /><br />
+                 echo "<p><span>".$ligne['ladesc']."</span><br /><br />
 				 
-                 <a href=''><img src='img/modifier.png' alt='modifier' /></a> <img onclick='supprime(".$ligne['id'].");' src='img/supprimer.png' alt='supprimer' />
+                 <a href='modif.php?id=".$ligne['id']."'><img src='img/modifier.png' alt='modifier' /></a> <img onclick='supprime(".$ligne['id'].");' src='img/supprimer.png' alt='supprimer' />
                      </p>";
 					 $sections = explode('|||',$ligne['lintitule']);
                  //$idsections = explode(',',$ligne['idrub']);
                  foreach($sections AS $key => $valeur){
                      echo " $valeur<br/>";
                  }
-			     echo"By ".$_SESSION['lenom'];
+			     echo"<span class='name'>By ".$_SESSION['lenom']."</span>";
                  echo "</div>";
                }
                ?>
                  </div>
              </div>
             <div id="bas"></div>
+         
+          <?php
+			include 'includes/footer.php';
+		 ?>
          </div>
 
     </body>

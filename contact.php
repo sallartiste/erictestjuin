@@ -1,4 +1,45 @@
 <?php
+session_start();
+
+require_once 'includes/config.php';
+require_once 'includes/connect.php';
+require_once 'includes/fonctions.php';
+
+if(isset($_POST['lelogin']) && isset($_POST['lepass']))
+{
+	//définition des variables local
+	$monlogin = traite_chaine($_POST['lelogin']);
+	$monpswd = traite_chaine($_POST['lepass']);
+	
+	//Vérification dans la table administrator si le login et mot de pass correspondent à un administrator...
+	$req_admin = "SELECT  u.id, u.lemail, u.lenom, 
+		         d.lenom AS nom_perm, d.laperm 
+	             FROM utilisateur u
+		         INNER JOIN droit d ON u.droit_id = d.id
+                 WHERE u.lelogin='$monlogin' AND u.lepass = '$monpswd';";
+	$recup_admin = $bdd->query($req_admin) or die (print_r($bdd->erroInfo()));
+	
+	if($recup_admin->rowCount())
+	{
+		$recup_tab = $recup_admin->fetch();
+		$_SESSION = $recup_tab;
+		
+		#creation des variables de session
+		$_SESSION['sid'] = session_id();
+		
+		#Variables venant de l'administrator
+        $_SESSION['lelogin'] = $monlogin;
+        header('location: ' . CHEMIN_RACINE);
+	}
+	else
+	{
+		echo '<body onLoad="alert(\'Mauvais login ou le mot de passe incorrect...\')">';
+		// puis on le redirige vers la page d'accueil
+		echo '<meta http-equiv="refresh" content="0;URL=index.php">';
+		$error_connect = "Mauvais login ou le mot de passe incorrect";
+	}
+}
+
 //verifier si le formulaire à bien été envoyé
 if(isset($_POST['nom']) && isset($_POST['titre']) && isset($_POST['sujet']) && isset($_POST['couriel']) && isset($_POST['letexte']))
 {
@@ -21,19 +62,24 @@ if(isset($_POST['nom']) && isset($_POST['titre']) && isset($_POST['sujet']) && i
 }
 
 ?>
+
 <!doctype html>
 <html>
-<?php
-   include "includes/head.php";
-?>
+    <?php
+      include "includes/head.php";
+    ?>
 
-<body>
-<div id="formulaire">
+    <body>
+       <div class="wrap">
+         <?php include 'includes/header.php'; ?>
+        <div class="content">
+            <h2>Contactez-nous</h2>
+               
+               <div id="formulaire">
             <h5>UN PETIT MOT ?</h5>
             <p>
-                Vous pouvez utiliser le formulaire de contact ci-dessous pour tout demande de renseignement, 
-                ou sinon utiliser l'adresse e-mail.
-            </p>
+                Vous pouvez utiliser le formulaire de contact ci-dessous pour toute demande. 
+            </p><br />
             <?php
                 if(isset($affiche))
                 {
@@ -57,5 +103,12 @@ if(isset($_POST['nom']) && isset($_POST['titre']) && isset($_POST['sujet']) && i
 			?>
 
         </div><!--fin #formulaire-->
-</body>
+              
+        </div>
+       
+        <?php
+			include 'includes/footer.php';
+		 ?>
+         </div>
+    </body>
 </html>

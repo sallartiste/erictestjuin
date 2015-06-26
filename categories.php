@@ -5,6 +5,8 @@ require_once 'includes/config.php';
 require_once 'includes/connect.php';
 require_once 'includes/fonctions.php';
 
+
+
 if(isset($_POST['lelogin']) && isset($_POST['lepass']))
 {
 	//définition des variables local
@@ -46,7 +48,7 @@ if(isset($_GET['idrubriques']) && ctype_digit($_GET['idrubriques']))
    #on choisi une rubrique
 	$tech_pitz = "INNER JOIN photo_has_rubriques h ON p.id = h.photo_id
 				  INNER JOIN rubriques r ON r.id = h.rubriques_id 
-				  WHERE s.id = ".$_GET['idrubriques'];
+				  WHERE r.id = ".$_GET['idrubriques'];
 }
 else
 {
@@ -63,6 +65,12 @@ else
 			
 	$recup_sql = $bdd->prepare($sql) or die (print_r(errorInfo()));	
 	$recup_sql->execute();
+	
+	$sql="SELECT * FROM rubriques ORDER BY lintitule ASC;";
+$recup_section = $bdd->prepare($sql) or die (print_r(errorInfo()));
+$recup_section->execute();
+
+
 
 ?>
 
@@ -76,23 +84,44 @@ else
        <div class="wrap">
          <?php include 'includes/header.php'; ?>
         <div class="content">
-            <h1>Bienvenues sur Telepro-photo.fr</h1>
-           
+        <?php echo "<span>Bonjour ";
+			echo isset($_SESSION['lenom'])?$_SESSION['lenom']:" Visiteurs !";
+			echo" </span>"
+		?>
+        <?php
+           foreach($categories as $key => $value)
+		   {
+				
+				if (isset($_GET['idrubriques']) && $_GET['idrubriques'] == $key)
+				{	
+					//echo"<li class='active'>$value</li>";
+					echo " <h3 class='cat'>Vous êtes dans la section :<span> $value</span></h3>";
+				}
+				else
+				{
+					 //header('location: . CHEMIN_RACINE');
+				}	
+			}
+          ?>
+          
+           <br />
             <?php
             while($ligne = $recup_sql->fetch())
 			{
                  echo "<div class='miniatures'>";
                  echo "<h4>".$ligne['letitre']."</h4>";
                  echo "<a href='".CHEMIN_RACINE.$dossier_gd.$ligne['lenom'].".".$ligne['lextension']."' target='_blank'><img src='".CHEMIN_RACINE.$dossier_mini.$ligne['lenom'].".".$ligne['lextension']."' alt='' /></a>";
-                 echo "<p>".$ligne['ladesc']."<br /> <span class='name'> by ".$ligne['lelogin']."</span></p>";
+                 echo "<p>".$ligne['ladesc']."<br /> <span class='name'>by ".$ligne['lelogin']."</span></p>";
+				
+				  
                  echo "</div>";
                }                
                ?> 
         </div>
-        <?php
-		   include 'includes/footer.php';
-		?>
-       </div>
        
+        <?php
+			include 'includes/footer.php';
+		 ?>
+         </div>
     </body>
 </html>

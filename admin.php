@@ -5,66 +5,42 @@ require_once 'includes/config.php';
 require_once 'includes/connect.php';
 require_once 'includes/fonctions.php';
 
+#preparation de la pagination
+   $recup_nb_photo = "SELECT COUNT(*) nb FROM photo";
+   $tot = $bdd->query($recup_nb_photo);
+   $maligne = $tot->fetch();
+	
+   $nb_total = $maligne['nb'];
+	
+   //verification de la pagination
+	
+   if(isset($_GET[$get_pagination]) && ctype_digit($_GET[$get_pagination]))
+    {
+	$page_actu = $_GET[$get_pagination];
+	}
+	else
+	{
+	$page_actu = 1;
+	}
+   //creation de la variable de debut a mettre dans la limite
+  $debut = ($page_actu-1)*$elements_par_page;
+  
+  #Initialisation de la pagination
+  $get_pagination = "pg"; 
+  $pagina = pagination($nb_total, $page_actu, $elements_par_page, $get_pagination);
+  
+//*******fin pagination*********//
+
 # si on est pas (ou plus) connecté
-if (!isset($_SESSION['sid']) || $_SESSION['sid'] != session_id()) {
+if(!isset($_SESSION['sid']) || $_SESSION['sid'] != session_id()) 
+{
     header("location: deconnect.php");
 }
 
-# si on a envoyé le formulaire et qu'un fichier est bien attaché
-if(isset($_POST['letitre'])&&isset($_FILES['lefichier'])){
-    
-    $letitre = traite_chaine($_POST['letitre']);
-    $ladesc = traite_chaine($_POST['ladesc']);
-    
-    # récupération des paramètres du fichier uploadé
-    $limage = $_FILES['lefichier'];
-
-    # appel de la fonction d'envoi de l'image
-    $upload = upload_originales($limage,$dossier_ori,$formats_acceptes);
-    
-    // si $upload n'est pas un tableau c'est qu'on a une erreur
-    if(!is_array($upload)){
-        // on affiche l'erreur
-        echo $upload;
-        
-    // si on a pas d'erreur, 
-    }else{
-        
-        // création de la grande image qui garde les proportions
-        $gd_ok = creation_img($dossier_ori, $upload['nom'],$upload['extension'],$dossier_gd,$grande_large,$grande_haute,$grande_qualite);
-        
-        // création de la miniature centrée et coupée
-        $min_ok = creation_img($dossier_ori, $upload['nom'],$upload['extension'],$dossier_mini,$mini_large,$mini_haute,$mini_qualite,false);
-        
-        // si la création des 2 images sont effectuées
-        if($gd_ok==true && $min_ok==true){
-            
-          
-			 $sql= "INSERT INTO photo (lenom,lextension,lepoids,lalargeur,lahauteur,letitre,ladesc,utilisateur_id) 
-			 VALUES (?,?,?,?,?,?,?,?);";
-			 $lespics = $bdd->prepare($sql) or die (print_r(errorInfo()));
-			 $lesphotos = $lespics->execute(array($upload['nom'],$upload['extension'],$upload['poids'],$upload['largeur'],$upload['hauteur'],$letitre,$ladesc,$_SESSION['id']));
-			 
-			 $id_photo = $bdd->lastInsertId();
-			 
-			 if(isset($_POST['section'])){
-            foreach($_POST['section'] AS $clef => $valeur){
-                if(ctype_digit($valeur))
-				{
-                    $bdd->query("INSERT INTO photo_has_rubriques VALUES ($id_photo,$valeur);")or die(print_r(errorInfo()));
-                }
-            }
-            }
-            
-        }else{
-            echo 'Erreur lors de la création des images redimenssionnées';
-        }
-        
-    }    
-}
 
 // si on confirme la suppression
-if(isset($_GET['delete'])&& ctype_digit($_GET['delete'])){
+if(isset($_GET['delete'])&& ctype_digit($_GET['delete']))
+{
     $idphoto = $_GET['delete'];
     $idutil = $_SESSION['id'];
     
@@ -98,7 +74,7 @@ $sql = "SELECT p.*, GROUP_CONCAT(r.id) AS idrub, GROUP_CONCAT(r.lintitule SEPARA
 	LEFT JOIN photo_has_rubriques h ON h.photo_id = p.id
     LEFT JOIN rubriques r ON h.rubriques_id = r.id
         GROUP BY p.id
-        ORDER BY p.id DESC;
+        ORDER BY p.id DESC LIMIT $debut,$elements_par_page;
     ";
 $recup_sql = $bdd->query($sql) or die (print_r($bdd->erroInfo()));
 
@@ -116,56 +92,12 @@ $recup_section->execute();
     ?>
     <body>
          <div class="wrap">
-             <header>
-                <div class="connect">
-				<?php // texte d'accueil
-                        echo "<span>Bonjour ".$_SESSION['lenom']. "| </span>";
-						echo "<span><a href='deconnect.php'>Déconnexion</a></span><br />";
-                        echo "<span>Vous êtes connecté en tant que <span>".$_SESSION['nom_perm']."</span></span><br />";
-                       
-                        // liens  suivant la permission utilisateur
-                        switch($_SESSION['laperm']){
-                            // si on est l'admin
-                            case 0 :
-                               echo "<a href='admin.php'>Administrer le site</a> - <a href='membre.php'>Espace membre</a>";
-                                break;
-                            // si on est modérateur
-                            case 1:
-                                echo "<a href='modere.php'>Modérer le site</a> - <a href='membre.php'>Espace membre</a>";
-                                break;
-                            // si autre droit (ici simple utilisateur)
-                            default :
-                                echo "<a href='membre.php'>Espace membre</a>";
-                        }?>
-                </div>
-                 <br /><br />
-          <nav>
-              <ul>
-                 <li><a href="index.php">Accueil</a></li>
-                <li><a href="">Catégories</a>
-                  <ul>
-                    <?php
-					   $req = "SELECT * FROM rubriques ORDER BY id";
-					   $rub_pics =$bdd->prepare($req) or die (print_r(errorInfo()));
-					   $rub_pics->execute();
-					   
-					   while($rubriques = $rub_pics->fetch())
-					   {
-					       $sous_categories = $rubriques['lintitule'];
-						   echo"<li><a href=''>$sous_categories</a></li>";
-					   }
-					?>
-                   </ul>
-                 </li>
-                 <li><a href="contact.php">Nous Contacter</a></li>
-                 <li><a href="">Espaces Clients</a></li>
-              </ul>
-              <div class="clear"></div>
-          </nav>
-             </header>
+             <?php include 'includes/header.php'; ?>
           
              <div class="content">
-                 <h3>Bonjour Super Administrator</h3> 
+                 <h3>Bonjour Super Administrator</h3>
+                  
+                 <div class="pagina"><?= $pagina ?></div><!--Affichage de Pagination-->
                  
                  <div id="lesphotos">
                      <?php
@@ -175,7 +107,7 @@ $recup_section->execute();
                  echo "<a href='".CHEMIN_RACINE.$dossier_gd.$ligne['lenom'].".".$ligne['lextension']."' target='_blank'><img src='".CHEMIN_RACINE.$dossier_mini.$ligne['lenom'].".jpg' alt='' /></a>";
                  echo "<p>".$ligne['ladesc']."<br /><br />
 				 
-                 <a href=''><img src='img/modifier.png' alt='modifier' /></a> <img onclick='supprime(".$ligne['id'].");' src='img/supprimer.png' alt='supprimer' />
+                 <a href='modif.php?id=".$ligne['id']."'><img src='img/modifier.png' alt='modifier' /></a> <img onclick='supprime(".$ligne['id'].");' src='img/supprimer.png' alt='supprimer' />
                      </p>";
 					 $sections = explode('|||',$ligne['lintitule']);
                  //$idsections = explode(',',$ligne['idrub']);
@@ -188,7 +120,10 @@ $recup_section->execute();
                  </div>
              </div>
             <div id="bas"></div>
+         
+         <?php
+			include 'includes/footer.php';
+		 ?>
          </div>
-
     </body>
 </html>
