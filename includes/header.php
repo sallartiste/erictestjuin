@@ -28,19 +28,23 @@
                 switch($_SESSION['laperm']){
                     // si on est l'admin
                     case 0 :
-                       echo "<span class='link'><a href='admin.php'>Administrer le site</a> | <a href='membre.php'>Espace membre</a></span>";
+                       echo "<span class='link'><a href='admin.php'>Administrer le site</a> | <a href='membre.php'>Espace Client</a></span>";
                         break;
                     // si on est modérateur
                     case 1:
-                        echo "<span class='link'><a href='modere.php'>Modérer le site</a> | <a href='membre.php'>Espace membre</a></span>";
+                        echo "<span class='link'><a href='modere.php'>Modérer le site</a> | <a href='membre.php'>Espace Client</a></span>";
                         break;
                     // si autre droit (ici simple utilisateur)
                     default :
-                        echo "<span class='link'><a href='membre.php'>Espace membre</a></span>";
+                        echo "<span class='link'><a href='membre.php'>Espace Client</a></span>";
                 }
             }
-                 
+               
             ?>
+            <br /><br />
+            <form>
+               <input type="search" name="search" id="recherche" placeholder="Recherche" class="rech" />
+            </form>
         </div>
         <div class="clear"></div>
   <br />
