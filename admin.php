@@ -56,7 +56,7 @@ if(isset($_GET['delete'])&& ctype_digit($_GET['delete']))
 	$sql2->execute();
 	
 	// puis suppression dans la table photo
-    $sql_30="DELETE FROM photo WHERE id = $idphoto AND utilisateur_id = $idutil;";
+    $sql_30="DELETE FROM photo WHERE id = $idphoto ;";
 	$sql3 = $bdd->prepare($sql_30) or die (print_r(errorInfo()));
 	$sql3->execute();
 	

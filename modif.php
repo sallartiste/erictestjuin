@@ -44,7 +44,7 @@ if(isset($_POST['letitre'])){
                 }
             }
             }
-            header("Location: membre.php");
+            header("Location: admin.php");
 }
 
 
@@ -53,7 +53,7 @@ $sql = "SELECT p.*, GROUP_CONCAT(r.id) AS idrub, GROUP_CONCAT(r.lintitule SEPARA
     FROM photo p
 	LEFT JOIN photo_has_rubriques h ON h.photo_id = p.id
     LEFT JOIN rubriques r ON h.rubriques_id = r.id
-        WHERE p.utilisateur_id = ".$_SESSION['id']." 
+        WHERE p.utilisateur_id
             AND p.id = $idphoto
         GROUP BY p.id
         ORDER BY p.id DESC;
